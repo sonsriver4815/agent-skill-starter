@@ -1,0 +1,3 @@
+display_name: "{{display_name}}"
+short_description: "Run a repeatable {{display_name}} workflow."
+default_prompt: "Use this skill to plan, execute, verify, and report a {{display_name}} workflow."

@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-skill-starter"
+version = "0.1.0"
+description = "Create, validate, and ship Agent Skills in minutes."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+  { name = "Agent Skill Starter Contributors" }
+]
+keywords = ["ai-agents", "codex", "claude-code", "agent-skills", "developer-tools", "cli"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Code Generators",
+  "Topic :: Utilities",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/YOUR_NAME/agent-skill-starter"
+Issues = "https://github.com/YOUR_NAME/agent-skill-starter/issues"
+
+[project.scripts]
+skill-starter = "agent_skill_starter.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+agent_skill_starter = ["templates/**/*", "examples/**/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
