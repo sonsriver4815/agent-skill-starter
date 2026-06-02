@@ -2,20 +2,32 @@
 
 Create, validate, and ship Agent Skills in minutes.
 
+[![Tests](https://github.com/sonsriver4815/agent-skill-starter/actions/workflows/tests.yml/badge.svg)](https://github.com/sonsriver4815/agent-skill-starter/actions/workflows/tests.yml)
+
 `agent-skill-starter` is a tiny CLI and template kit for building `SKILL.md`-style Agent Skills for Codex, Claude Code, OpenCode, and other coding agents that can load task-specific instructions.
 
 It helps you move from "I keep repeating this workflow in chat" to a reusable, validated skill folder that another agent can actually use.
 
 ## 30-second quickstart
 
+Install from a local checkout:
+
 ```bash
-pipx install agent-skill-starter
+git clone https://github.com/sonsriver4815/agent-skill-starter.git
+cd agent-skill-starter
+python -m pip install -e .
 skill-starter init repo-review-check --template workflow
 skill-starter validate repo-review-check
 skill-starter audit repo-review-check
 ```
 
-Local development:
+When a PyPI release is available, the install command will become:
+
+```bash
+pipx install agent-skill-starter
+```
+
+Local development with tests:
 
 ```bash
 python -m venv .venv
@@ -37,6 +49,21 @@ This starter gives you:
 - audit checks for trigger quality and progressive disclosure
 - examples that are safe to copy
 - a lightweight CLI with no runtime dependencies
+
+## Works with
+
+- Codex-style `SKILL.md` folders
+- Claude Code repository workflows
+- OpenCode and other agents that can load task-specific markdown instructions
+- Plain repository templates for teams that want reusable agent playbooks
+
+## Why Agent Skills fail
+
+- The description does not explain when the skill should trigger.
+- The body is a long document instead of a workflow.
+- Private machine paths or project-only assumptions leak into examples.
+- There is no verification section, so agents stop after making changes.
+- Detailed references are pasted into `SKILL.md` instead of loaded progressively.
 
 ## Before and after
 
