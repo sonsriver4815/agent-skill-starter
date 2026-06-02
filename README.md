@@ -1,12 +1,12 @@
 # agent-skill-starter
 
-Create, validate, and ship Agent Skills in minutes.
+Build reusable `SKILL.md` folders for coding agents.
 
 [![Tests](https://github.com/sonsriver4815/agent-skill-starter/actions/workflows/tests.yml/badge.svg)](https://github.com/sonsriver4815/agent-skill-starter/actions/workflows/tests.yml)
 
-`agent-skill-starter` is a small CLI for creating `SKILL.md` folders that coding agents can reuse.
+`agent-skill-starter` is a small CLI for turning repeated agent workflows into reusable `SKILL.md` folders.
 
-Use it when you have a repeated agent workflow, prompt, checklist, review process, or tool setup that should become a reusable Agent Skill instead of staying buried in chat history.
+Use it when a prompt, checklist, review process, or tool setup keeps coming up and deserves a stable home.
 
 ## What you get
 
@@ -43,7 +43,7 @@ Score: 100/100
 - Looks ready to ship.
 ```
 
-PyPI publishing is not set up yet. After the first package release, installation will be:
+PyPI publishing is still on the roadmap. After the first package release, installation will be:
 
 ```bash
 pipx install agent-skill-starter
@@ -51,7 +51,7 @@ pipx install agent-skill-starter
 
 ## What is an Agent Skill?
 
-An Agent Skill is a small folder that tells an AI coding agent how to do one recurring job well.
+An Agent Skill is a small folder that tells a coding agent how to do one recurring job well.
 
 ```text
 repo-review-check/
@@ -178,7 +178,7 @@ This project uses plain folders and markdown so the output can be copied into di
 - OpenCode and similar coding agents
 - team repositories that keep reusable agent playbooks
 
-Different agents discover and load skills differently. This project focuses on creating clean, portable skill folders.
+Different agents discover and load skills differently. This project keeps the output plain so you can copy it where your agent expects it.
 
 ## What makes a good Skill?
 
