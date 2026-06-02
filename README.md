@@ -4,66 +4,69 @@ Create, validate, and ship Agent Skills in minutes.
 
 [![Tests](https://github.com/sonsriver4815/agent-skill-starter/actions/workflows/tests.yml/badge.svg)](https://github.com/sonsriver4815/agent-skill-starter/actions/workflows/tests.yml)
 
-`agent-skill-starter` is a tiny CLI and template kit for building `SKILL.md`-style Agent Skills for Codex, Claude Code, OpenCode, and other coding agents that can load task-specific instructions.
+`agent-skill-starter` is a small CLI for creating `SKILL.md` folders that coding agents can reuse.
 
-It helps you move from "I keep repeating this workflow in chat" to a reusable, validated skill folder that another agent can actually use.
+Use it when you have a repeated agent workflow, prompt, checklist, review process, or tool setup that should become a reusable Agent Skill instead of staying buried in chat history.
 
-## 30-second quickstart
+## What you get
 
-Install from a local checkout:
+- `skill-starter init`: generate a new skill folder from a template
+- `skill-starter validate`: catch broken `SKILL.md` frontmatter and missing references
+- `skill-starter audit`: score whether a skill is clear enough for agents to trigger and use
+- starter templates for minimal, workflow, and tooling skills
+- copyable examples for reviews, local setup, and meeting notes
+
+## Quickstart
+
+Clone the repo and install it locally:
 
 ```bash
 git clone https://github.com/sonsriver4815/agent-skill-starter.git
 cd agent-skill-starter
 python -m pip install -e .
+```
+
+Create and check your first skill:
+
+```bash
 skill-starter init repo-review-check --template workflow
 skill-starter validate repo-review-check
 skill-starter audit repo-review-check
 ```
 
-When a PyPI release is available, the install command will become:
+Example output:
+
+```text
+Created repo-review-check
+OK
+Score: 100/100
+- Looks ready to ship.
+```
+
+PyPI publishing is not set up yet. After the first package release, installation will be:
 
 ```bash
 pipx install agent-skill-starter
 ```
 
-Local development with tests:
+## What is an Agent Skill?
 
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -e .
-skill-starter init demo-skill --template tooling --path .
-skill-starter validate demo-skill
-skill-starter audit demo-skill --json
+An Agent Skill is a small folder that tells an AI coding agent how to do one recurring job well.
+
+```text
+repo-review-check/
+  SKILL.md
+  agents/openai.yaml
+  references/
+  scripts/
 ```
 
-## Why this exists
+The most important file is `SKILL.md`. It contains:
 
-Agent Skills are most useful when they are small, specific, and easy to trigger. In practice, many skills fail because they are too vague, too long, missing validation, or full of private project details.
-
-This starter gives you:
-
-- templates for common skill shapes
-- validation for required `SKILL.md` structure
-- audit checks for trigger quality and progressive disclosure
-- examples that are safe to copy
-- a lightweight CLI with no runtime dependencies
-
-## Works with
-
-- Codex-style `SKILL.md` folders
-- Claude Code repository workflows
-- OpenCode and other agents that can load task-specific markdown instructions
-- Plain repository templates for teams that want reusable agent playbooks
-
-## Why Agent Skills fail
-
-- The description does not explain when the skill should trigger.
-- The body is a long document instead of a workflow.
-- Private machine paths or project-only assumptions leak into examples.
-- There is no verification section, so agents stop after making changes.
-- Detailed references are pasted into `SKILL.md` instead of loaded progressively.
+- frontmatter that tells the agent when to use the skill
+- short workflow instructions
+- verification rules
+- final reporting guidance
 
 ## Before and after
 
@@ -103,14 +106,97 @@ Use this skill for bounded, read-only review work.
 - Include test gaps and residual risk.
 ```
 
-## CLI demo
+## Commands
+
+### `init`
+
+Create a new skill folder.
+
+```bash
+skill-starter init local-dev-setup --template tooling
+```
+
+Templates:
+
+- `minimal`: only `SKILL.md`
+- `workflow`: step-by-step workflow skill
+- `tooling`: `SKILL.md`, `references/`, and `scripts/`
+
+### `validate`
+
+Check required structure.
+
+```bash
+skill-starter validate local-dev-setup
+```
+
+It checks:
+
+- valid YAML-style frontmatter
+- required `name`
+- required `description`
+- lowercase hyphenated skill name
+- missing files linked from `references/`
+
+### `audit`
+
+Score whether a skill is easy for an agent to trigger and use.
+
+```bash
+skill-starter audit local-dev-setup
+skill-starter audit local-dev-setup --json
+```
+
+It looks for:
+
+- trigger-friendly descriptions
+- overly long `SKILL.md` bodies
+- missing verification guidance
+- missing final reporting guidance
+- broken reference links
+
+### `examples`
+
+List bundled example skills.
 
 ```bash
 skill-starter examples
-skill-starter init local-dev-setup --template tooling
-skill-starter validate local-dev-setup
-skill-starter audit local-dev-setup
-skill-starter audit local-dev-setup --json
+```
+
+Bundled examples:
+
+- `repo-review-check`
+- `local-dev-setup`
+- `meeting-notes-actions`
+
+## Works with
+
+This project uses plain folders and markdown so the output can be copied into different agent workflows:
+
+- Codex-style `SKILL.md` folders
+- Claude Code repository workflows
+- OpenCode and similar coding agents
+- team repositories that keep reusable agent playbooks
+
+Different agents discover and load skills differently. This project focuses on creating clean, portable skill folders.
+
+## What makes a good Skill?
+
+- The `description` says exactly when the skill should trigger.
+- The body is a workflow, not a long essay.
+- The skill handles one recurring job.
+- Private paths, tokens, customer names, and machine-specific assumptions are removed.
+- Detailed reference material lives in `references/`.
+- Scripts are included only when deterministic execution matters.
+- Verification and final reporting are explicit.
+
+## Development
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -e . -r requirements-dev.txt
+python -m pytest -q
 ```
 
 Exit codes:
@@ -119,55 +205,14 @@ Exit codes:
 - `1`: validation error
 - `2`: usage error
 
-## Templates
+## Roadmap
 
-- `minimal`: creates only `SKILL.md`
-- `workflow`: creates a step-by-step workflow skill
-- `tooling`: creates `SKILL.md`, `references/`, and `scripts/`
-
-## What makes a good Skill?
-
-- The `description` says exactly when the skill should trigger.
-- The body contains procedures, not generic advice.
-- The skill is narrow enough to be useful.
-- Private paths, tokens, customer names, and machine-specific assumptions are removed.
-- Detailed reference material lives in `references/`, not the main `SKILL.md`.
-- Scripts are included only when deterministic execution matters.
-- Verification and final reporting are explicit.
-
-## Compatibility
-
-This project targets the portable `SKILL.md` folder pattern:
-
-```text
-skill-name/
-  SKILL.md
-  agents/openai.yaml
-  references/
-  scripts/
-  assets/
-```
-
-Different agents expose skills differently. The generated folders are intentionally plain so they can be copied into Codex, Claude Code, OpenCode, or any repository-level agent workflow.
-
-## Examples
-
-Bundled examples:
-
-- `repo-review-check`
-- `local-dev-setup`
-- `meeting-notes-actions`
-
-Copy one, edit the frontmatter, then run:
-
-```bash
-skill-starter validate path/to/skill
-skill-starter audit path/to/skill
-```
+- publish to PyPI
+- add more real-world skill examples
+- explain audit scoring in more detail
+- add a `copy-example` command
 
 ## GitHub topics
-
-Use these topics when publishing the repository:
 
 `ai-agents`, `codex`, `claude-code`, `agent-skills`, `developer-tools`, `cli`
 
