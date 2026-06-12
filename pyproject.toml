@@ -26,8 +26,8 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/YOUR_NAME/agent-skill-starter"
-Issues = "https://github.com/YOUR_NAME/agent-skill-starter/issues"
+Homepage = "https://github.com/sonsriver4815/agent-skill-starter"
+Issues = "https://github.com/sonsriver4815/agent-skill-starter/issues"
 
 [project.scripts]
 skill-starter = "agent_skill_starter.cli:main"
