@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from importlib import resources
 
 from agent_skill_starter.cli import main
 
@@ -73,9 +74,25 @@ def test_validate_rejects_missing_reference(tmp_path, capsys):
 def test_examples_lists_bundled_examples(capsys):
     assert main(["examples"]) == 0
     output = capsys.readouterr().out
+    assert "bug-reproduction" in output
+    assert "frontend-qa" in output
     assert "repo-review-check" in output
     assert "local-dev-setup" in output
     assert "meeting-notes-actions" in output
+    assert "release-notes" in output
+
+
+def test_bundled_examples_validate_and_audit(capsys):
+    examples_root = resources.files("agent_skill_starter") / "examples"
+    for example in examples_root.iterdir():
+        if not example.is_dir():
+            continue
+        assert main(["validate", str(example)]) == 0
+        assert "OK" in capsys.readouterr().out
+        assert main(["audit", str(example), "--json"]) == 0
+        report = json.loads(capsys.readouterr().out)
+        assert report["score"] == 100
+        assert report["findings"][0]["code"] == "ready"
 
 
 def test_audit_explains_findings_and_fixes(tmp_path, capsys):

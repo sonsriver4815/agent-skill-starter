@@ -174,9 +174,12 @@ skill-starter examples
 
 Bundled examples:
 
+- `bug-reproduction`
+- `frontend-qa`
 - `repo-review-check`
 - `local-dev-setup`
 - `meeting-notes-actions`
+- `release-notes`
 
 ## Works with
 
