@@ -43,7 +43,7 @@ Score: 100/100
 - Looks ready to ship.
 ```
 
-PyPI publishing is still on the roadmap. After the first package release, installation will be:
+PyPI publishing is being prepared. After the first package release, installation will be:
 
 ```bash
 pipx install agent-skill-starter
@@ -199,6 +199,24 @@ pip install -e . -r requirements-dev.txt
 python -m pytest -q
 ```
 
+Build the package locally:
+
+```bash
+python -m build
+```
+
+## PyPI publishing status
+
+PyPI publishing is prepared but not enabled yet.
+
+The repository includes a GitHub Actions workflow for PyPI Trusted Publishing. Before using it, configure a PyPI Trusted Publisher for this repository:
+
+- repository: `sonsriver4815/agent-skill-starter`
+- workflow: `publish.yml`
+- environment: `pypi`
+
+After that is configured on PyPI, publish a GitHub Release to upload the package.
+
 Exit codes:
 
 - `0`: success
@@ -207,7 +225,7 @@ Exit codes:
 
 ## Roadmap
 
-- publish to PyPI
+- finish PyPI Trusted Publisher setup
 - add more real-world skill examples
 - explain audit scoring in more detail
 - add a `copy-example` command
