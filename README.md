@@ -155,6 +155,15 @@ It looks for:
 - missing final reporting guidance
 - broken reference links
 
+Each finding includes:
+
+- what failed
+- why it matters
+- how to fix it
+- the score deduction
+
+JSON output uses the same structure, so scripts can read `code`, `impact`, `remediation`, and `deduction` directly.
+
 ### `examples`
 
 List bundled example skills.

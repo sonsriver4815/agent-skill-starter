@@ -79,7 +79,13 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 print(f"Score: {report.score}/100")
                 for finding in report.findings:
-                    print(f"- {finding}")
+                    if finding.deduction:
+                        print(f"- [{finding.code}] {finding.title} (-{finding.deduction})")
+                    else:
+                        print(f"- [{finding.code}] {finding.title}")
+                    print(f"  {finding.message}")
+                    print(f"  Why: {finding.impact}")
+                    print(f"  Fix: {finding.remediation}")
             return 0
 
         if args.command == "examples":

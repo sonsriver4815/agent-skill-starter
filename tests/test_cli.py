@@ -21,6 +21,8 @@ def test_init_validate_and_audit(tmp_path, capsys):
     output = capsys.readouterr().out
     report = json.loads(output)
     assert report["score"] >= 80
+    assert report["findings"][0]["code"] == "ready"
+    assert report["findings"][0]["remediation"]
 
 
 def test_validate_rejects_missing_frontmatter(tmp_path, capsys):
@@ -74,3 +76,40 @@ def test_examples_lists_bundled_examples(capsys):
     assert "repo-review-check" in output
     assert "local-dev-setup" in output
     assert "meeting-notes-actions" in output
+
+
+def test_audit_explains_findings_and_fixes(tmp_path, capsys):
+    skill_path = tmp_path / "needs-audit-help"
+    skill_path.mkdir()
+    (skill_path / "SKILL.md").write_text(
+        "---\nname: needs-audit-help\ndescription: Short.\n---\n\n# Needs Audit Help\n",
+        encoding="utf-8",
+    )
+
+    assert main(["audit", str(skill_path)]) == 0
+    output = capsys.readouterr().out
+    assert "[description-too-short]" in output
+    assert "Why:" in output
+    assert "Fix:" in output
+
+
+def test_audit_json_returns_structured_findings(tmp_path, capsys):
+    skill_path = tmp_path / "missing-audit-sections"
+    skill_path.mkdir()
+    (skill_path / "SKILL.md").write_text(
+        "---\nname: missing-audit-sections\ndescription: Use when testing audit remediation details for generated skills.\n---\n\n# Missing Audit Sections\n",
+        encoding="utf-8",
+    )
+
+    assert main(["audit", str(skill_path), "--json"]) == 0
+    report = json.loads(capsys.readouterr().out)
+    finding = report["findings"][0]
+    assert {
+        "code",
+        "title",
+        "message",
+        "impact",
+        "remediation",
+        "deduction",
+    }.issubset(finding)
+    assert finding["remediation"]

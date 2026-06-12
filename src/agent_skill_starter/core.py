@@ -23,12 +23,35 @@ class ValidationReport:
 
 
 @dataclass(frozen=True)
-class AuditReport:
-    score: int
-    findings: list[str]
+class AuditFinding:
+    code: str
+    title: str
+    message: str
+    impact: str
+    remediation: str
+    deduction: int
 
     def to_dict(self) -> dict[str, object]:
-        return {"score": self.score, "findings": self.findings}
+        return {
+            "code": self.code,
+            "title": self.title,
+            "message": self.message,
+            "impact": self.impact,
+            "remediation": self.remediation,
+            "deduction": self.deduction,
+        }
+
+
+@dataclass(frozen=True)
+class AuditReport:
+    score: int
+    findings: list[AuditFinding]
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "score": self.score,
+            "findings": [finding.to_dict() for finding in self.findings],
+        }
 
 
 def create_skill(name: str, parent: Path, template: str, force: bool = False) -> Path:
@@ -97,26 +120,68 @@ def audit_skill(path: Path) -> AuditReport:
     skill_file = _resolve_skill_file(path)
     parsed = _parse_skill(skill_file)
     if parsed is None:
-        return AuditReport(0, ["SKILL.md is missing valid frontmatter."])
+        return AuditReport(
+            0,
+            [
+                AuditFinding(
+                    code="frontmatter-missing",
+                    title="Missing frontmatter",
+                    message="SKILL.md is missing valid frontmatter.",
+                    impact="Agents cannot discover the skill name or trigger description reliably.",
+                    remediation="Start SKILL.md with YAML frontmatter containing name and description.",
+                    deduction=100,
+                )
+            ],
+        )
 
     metadata, markdown = parsed
     description = metadata.get("description", "").strip()
-    findings: list[str] = []
+    findings: list[AuditFinding] = []
     score = 100
 
     if len(description.split()) < 16:
-        score -= 20
-        findings.append("Description should include richer trigger context.")
+        deduction = 20
+        score -= deduction
+        findings.append(
+            AuditFinding(
+                code="description-too-short",
+                title="Description is too short",
+                message="Description should include richer trigger context.",
+                impact="Short descriptions are easy to miss because agents only see metadata before loading the skill body.",
+                remediation="Mention the task type, concrete triggers, and at least one boundary for when to use the skill.",
+                deduction=deduction,
+            )
+        )
 
     trigger_terms = ["use when", "when", "mentions", "tasks", "work with", "for"]
     if not any(term in description.lower() for term in trigger_terms):
-        score -= 20
-        findings.append("Description should say when the skill should trigger.")
+        deduction = 20
+        score -= deduction
+        findings.append(
+            AuditFinding(
+                code="trigger-context-missing",
+                title="Trigger context is missing",
+                message="Description should say when the skill should trigger.",
+                impact="Agents may ignore the skill or use it for unrelated requests.",
+                remediation="Add wording such as 'Use when...' followed by the user requests or files that should trigger the skill.",
+                deduction=deduction,
+            )
+        )
 
     body_lines = [line for line in markdown.splitlines() if line.strip()]
     if len(body_lines) > 180:
-        score -= 15
-        findings.append("Body is long; move details into references/ for progressive disclosure.")
+        deduction = 15
+        score -= deduction
+        findings.append(
+            AuditFinding(
+                code="body-too-long",
+                title="Skill body is long",
+                message="Body is long; move details into references/ for progressive disclosure.",
+                impact="Large skill bodies consume context before the agent knows which details matter.",
+                remediation="Keep SKILL.md focused on the workflow and move examples, schemas, and variants into references/.",
+                deduction=deduction,
+            )
+        )
 
     if "references/" in markdown:
         missing = [
@@ -125,19 +190,58 @@ def audit_skill(path: Path) -> AuditReport:
             if not (skill_file.parent / link).exists()
         ]
         if missing:
-            score -= 20
-            findings.append(f"Missing reference files: {', '.join(missing)}")
+            deduction = 20
+            score -= deduction
+            findings.append(
+                AuditFinding(
+                    code="reference-missing",
+                    title="Referenced file is missing",
+                    message=f"Missing reference files: {', '.join(missing)}",
+                    impact="Agents will follow broken instructions and lose the detailed context the skill promised.",
+                    remediation="Create the missing reference file or remove the stale link from SKILL.md.",
+                    deduction=deduction,
+                )
+            )
 
     if "## Verification" not in markdown:
-        score -= 10
-        findings.append("Add a Verification section.")
+        deduction = 10
+        score -= deduction
+        findings.append(
+            AuditFinding(
+                code="verification-missing",
+                title="Verification guidance is missing",
+                message="Add a Verification section.",
+                impact="Agents may stop after editing without proving the skill worked.",
+                remediation="Add '## Verification' with the closest test, lint, dry run, or manual check expected for this task.",
+                deduction=deduction,
+            )
+        )
 
     if "## Final" not in markdown and "## Final Report" not in markdown:
-        score -= 5
-        findings.append("Add final reporting guidance.")
+        deduction = 5
+        score -= deduction
+        findings.append(
+            AuditFinding(
+                code="final-report-missing",
+                title="Final reporting guidance is missing",
+                message="Add final reporting guidance.",
+                impact="Different agents may finish with inconsistent summaries or omit verification results.",
+                remediation="Add '## Final Report' with the exact fields the agent should report back.",
+                deduction=deduction,
+            )
+        )
 
     if not findings:
-        findings.append("Looks ready to ship.")
+        findings.append(
+            AuditFinding(
+                code="ready",
+                title="Looks ready to ship",
+                message="Looks ready to ship.",
+                impact="No structural audit issues were found.",
+                remediation="Use the skill on a real task and revise it from execution evidence.",
+                deduction=0,
+            )
+        )
 
     return AuditReport(max(score, 0), findings)
 
